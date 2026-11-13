@@ -1,0 +1,55 @@
+﻿@page
+@model ApiDemo.Pages.DashboardModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Post Dashboard</h1>
+    <p>Welcome to the ApiDemo dashboard!</p>
+</div>
+
+<div class="card mt-4 p-4">
+    <h2>Total Posts</h2>
+    <div id="postCount" class="display-4">Loading...</div>
+</div>
+
+<div class="card mt-4 p-4">
+    <h2>Recent Posts</h2>
+    <ul id="recentPosts">
+        <li>Loading posts...</li>
+    </ul>
+</div>
+
+<script>
+    async function loadPosts() {
+        try {
+            const response = await fetch('/api/posts');
+
+            if (!response.ok) {
+                throw new Error('Unable to retrieve posts.');
+            }
+
+            const posts = await response.json();
+
+            document.getElementById('postCount').textContent = posts.length;
+
+            const recentPosts = document.getElementById('recentPosts');
+            recentPosts.innerHTML = '';
+
+            posts.slice(-5).reverse().forEach(post => {
+                const li = document.createElement('li');
+                li.textContent = post.title;
+                recentPosts.appendChild(li);
+            });
+
+        } catch (error) {
+            document.getElementById('postCount').textContent = 'Error';
+            document.getElementById('recentPosts').textContent =
+                'Could not load posts.';
+            console.error(error);
+        }
+    }
+
+    loadPosts();
+</script>
